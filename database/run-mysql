@@ -1,0 +1,47 @@
+#!/bin/bash
+
+if [ ! -d /db/mysql ]; then
+    my_database="$MYSQL_DATABASE"
+    my_root_password="$MYSQL_ROOT_PASSWORD"
+    my_user="$MYSQL_USER"
+    my_password="$MYSQL_PASSWORD"
+    my_temp="/db/tmp_file"
+
+    echo "setting up mysql ..."
+    # mkdir -p /db/mysql
+
+    mysql_install_db --user=root > /dev/null
+
+    if [ -z "$my_root_password" ]; then
+        my_root_password="change-root-password-$RANDOM-$RANDOM-$RANDOM-$RANDOM-$RANDOM-$RANDOM-$RANDOM"
+    fi
+    echo "root password: \"$my_root_password\""
+
+    mkdir -p /run/mysqld
+
+    cat << EOF > $my_temp
+USE mysql;
+FLUSH PRIVILEGES;
+GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY "$my_root_password" WITH GRANT OPTION;
+GRANT ALL PRIVILEGES ON *.* TO 'root'@'localhost' WITH GRANT OPTION;
+EOF
+
+    if [ ! -z "$my_database" ]; then
+        echo "creating database \"$my_database\""
+        echo "CREATE DATABASE IF NOT EXISTS \`$my_database\` CHARACTER SET utf8 COLLATE utf8_general_ci;" >> $my_temp
+
+        if [ ! -z "$my_user" ]; then
+            if [ -z "$my_password"]; then
+                my_password="change-$my_user-password-$RANDOM-$RANDOM-$RANDOM-$RANDOM-$RANDOM-$RANDOM-$RANDOM"
+            fi
+            echo "creating user \"$my_user\" for database \"$my_database\""
+            echo "$my_user password: \"$my_password\""
+            echo "GRANT ALL ON \`$my_database\`.* to '$my_user'@'%' IDENTIFIED BY '$my_password';" >> $my_temp
+        fi
+    fi
+
+    /usr/bin/mysqld --user=root --bootstrap --verbose=0 < $my_temp
+    rm -f $my_temp
+fi
+
+exec /usr/bin/mysqld --user=root --console
