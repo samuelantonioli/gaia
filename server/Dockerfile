@@ -6,7 +6,7 @@ RUN apk --update add --no-cache apache2 bash vim tar ca-certificates curl ssmtp 
     php7-json php7-zlib php7-xml php7-dom php7-ctype php7-opcache php7-zip php7-iconv \
     php7-pdo php7-pdo_mysql php7-pdo_sqlite php7-pdo_pgsql php7-mysqli php7-mbstring php7-session \
     php7-gd php7-mcrypt php7-openssl php7-sockets php7-posix php7-ldap \
-    apache2-utils && \
+    apache2-utils shadow && \
     ln -s /usr/bin/php7 /usr/bin/php && \
     mkdir -p /run/apache2 && \
     sed -i 's/#LoadModule\ rewrite_module/LoadModule\ rewrite_module/' /etc/apache2/httpd.conf && \
@@ -16,7 +16,8 @@ RUN apk --update add --no-cache apache2 bash vim tar ca-certificates curl ssmtp 
     echo 'chown -R apache:apache /var/www/localhost/htdocs' >> /usr/local/bin/httpd-foreground && \
     echo 'rm -f /usr/local/apache2/logs/httpd.pid' >> /usr/local/bin/httpd-foreground && \
     echo 'httpd -DFOREGROUND' >> /usr/local/bin/httpd-foreground && \
-    chmod +x /usr/local/bin/httpd-foreground
+    chmod +x /usr/local/bin/httpd-foreground && \
+    usermod -u 1000 apache
 
 EXPOSE 80 443
 
