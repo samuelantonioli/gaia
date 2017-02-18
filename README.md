@@ -43,7 +43,6 @@ der Instanz unter `/opt/typo3/src`.
 
 ```
 docker run --name projektname-db -e MYSQL_ROOT_PASSWORD=password -d gaia:database
-docker start projektname-db
 docker run --name projektname -p 8080:80 -p 4443:443 --link projektname-db:db -d gaia:typo3
 ```
 
