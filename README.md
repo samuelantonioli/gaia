@@ -131,6 +131,12 @@ Ein einziger Unterschied beim Setup:
 docker run --name projektname -p 8080:80 -p 4443:443 --link projektname-db:db -d gaia:server
 ```
 
+## Credits
+
+- [Datenbank](https://github.com/wangxian/alpine-mysql)
+- [Apache & PHP](https://github.com/wichon/alpine-apache-php)
+- [Apache](https://hub.docker.com/_/httpd/)
+
 ## Roadmap
 
 - Standard-Konfigurationen definieren (PHP, Apache, SSL)
