@@ -15,8 +15,7 @@ RUN mkdir -p /opt/typo3/src && \
     ln -s typo3_src/typo3 typo3 && \
     ln -s typo3_src/index.php index.php && \
     cp typo3_src/_.htaccess .htaccess && \
-    touch FIRST_INSTALL && \
-    rm -f /var/www/localhost/htdocs/index.html
+    touch FIRST_INSTALL
 
 EXPOSE 80 443
 

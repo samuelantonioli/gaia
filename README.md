@@ -4,20 +4,19 @@
 #docker #typo3 #cms #apache #php #mysql #mariadb #LAMP #alpine #linux
 ```
 
-Dieses Repository enthält drei Dockerfiles,  
-die ein einfaches Aufsetzen von  
-TYPO3-Servern ermöglichen.
+This repository contains three Dockerfiles  
+that enable a simple installation of TYPO3 servers.
 
-- typo3: Setzt einen Server mit TYPO3 auf
-- server: Server mit Apache und PHP
-- database: MySQL-Datenbank
+- typo3: server with TYPO3
+- server: server with apache und php
+- database: MySQL database
 
-Es wird [Alpine Linux](https://hub.docker.com/_/alpine/) genutzt, da es viel  
-kleiner als andere Linux-Distributionen ist.
+The Dockerfiles are based on [Alpine Linux](https://hub.docker.com/_/alpine/)
+because it's much smaller than other linux distributions.
 
 ## Installation
-Die Installation von `gaia` muss nur   
-einmalig auf einem Computer durchgeführt werden.
+
+The installation of `gaia` only needs to happen once.
 
 ```
 git clone https://github.com/samuelantonioli/gaia.git && cd gaia
@@ -26,120 +25,113 @@ docker build -f server/Dockerfile -t gaia:server -t gaia server
 docker build -f typo3/Dockerfile -t gaia:typo3 typo3
 ```
 
-## TYPO3 aufsetzen
+## TYPO3 setup
 
-Der häufigste Anwendungsfall ist,  
-dass man TYPO3 lokal und unkompliziert  
-installieren möchte.  
-Der `projektname` sollte überall mit dem  
-Namen des Projektes ersetzt werden,  
-wobei der Name nur aus Kleinbuchstaben,  
-Zahlen und Unterstrichen bestehen darf.  
-Die TYPO3-Installation befindet sich in  
-der Instanz unter `/opt/typo3/src`.
+A common use case is to install TYPO3 locally and uncomplicated.
+The `projectname` should be replaced everywhere with your project
+name in the following shell commands.
+It should only contain letters, numbers, dashes and underscores.  
+
+The TYPO3 installation can be found
+under `/opt/typo3/src`.
 
 ### Setup
-**Einmalig** für jede TYPO3-Instanz ausführen.
+**Only once** for each TYPO3 installation:
 
 ```
-docker run --name projektname-db -e MYSQL_ROOT_PASSWORD=password -d gaia:database
-docker run --name projektname -p 8080:80 -p 4443:443 --link projektname-db:db -d gaia:typo3
+docker run --name projectname-db -e MYSQL_ROOT_PASSWORD=password -d gaia:database
+docker run --name projectname -p 8080:80 -p 4443:443 --link projectname-db:db -d gaia:typo3
 ```
 
-### TYPO3 nutzen
-Nachdem man das Setup durchgeführt hat,  
-führt man zum Starten und Beenden folgendes aus:
+### Using TYPO3
+After the installation,
+it can be started and closed with the following commands:
 
 ```
-docker start projektname-db
-docker start projektname
-# Instanz über localhost:8080 erreichbar
+docker start projectname-db
+docker start projectname
+# instance can be found at localhost:8080
 
-# Zum Beenden der Instanz:
-docker stop projektname
-docker stop projektname-db
+# stop the instance
+docker stop projectname
+docker stop projectname-db
 ```
 
-Installation TYPO3:  
-Als Hostname der Datenbank einfach `db` eingeben.
+While installing TYPO3:  
+Use `db` as hostname for the database.
 
-### Instanz löschen
-Vorher die Instanzen beenden, die man löschen möchte.  
-**Damit wird die TYPO3-Instanz endgültig gelöscht!**
+### Delete TYPO3 installation
+Make sure you've stopped the instance before.  
+**Be careful! The installation will be deleted permanently!**
 
 ```
-docker rm projektname-db
-docker rm projektname
+docker rm projectname-db
+docker rm projectname
 ```
 
-## Zugang zur Instanz
+## Access the docker container
 
-Wenn man auf eine Instanz zugreifen möchte,  
-kann man darin eine Bash-Instanz starten.
+It is possible to open a bash in the docker container:
 
 ```
 docker exec -it containername bash
 ```
 
-Mit `docker ps` kann man alle laufenden,  
-mit `docker ps -a` alle vorhandenen  
-Instanzen einsehen.
+You can see all running docker instances using `docker ps`.  
+You can see all instances with `docker ps -a`.
 
-## Datenbank- oder Server-Instanz aufsetzen
+## Database or server setup
 
-Wenn man nicht TYPO3, sondern eine einzelne  
-Datenbank- oder Server-Instanz benötigt, dann kann  
-man die Images auch einzeln nutzen.
+You can also use the images independently,
+i.e. you can start database and server instances
+without using TYPO3.
 
-### Datenbank-Instanz
-`dbname` mit anderem Namen ersetzen.
+### Database setup
+Replace `dbname` with the name you want to use.
 
 ```
 # Setup
 docker run --name dbname -e MYSQL_ROOT_PASSWORD=password -d gaia:database
-# Nutzen
+# Use it
 docker start dbname
 docker stop dbname
-# Löschen
+# Delete
 docker rm dbname
 ```
 
-### Server-Instanz
-Apache und PHP, `servername` mit anderem Namen ersetzen.  
-Mit `-v` wird der Dateipfad vom Hostsystem in der Instanz  
-gemounted.
+### Server setup
+Apache and PHP7. Replace `servername` with the name you want to use.  
+You can mount a directory from your host system in your docker instance using `-v`.
 
 ```
 # Setup
-docker run --name servername -v /pfad/zu/deinen/dateien:/var/www/localhost/htdocs/ -d gaia:server
-# Nutzen
+docker run --name servername -v /path/to/your/files:/var/www/localhost/htdocs/ -d gaia:server
+# Use
 docker start servername
 docker stop servername
-# Löschen
+# Delete
 docker rm servername
 ```
 
-### Beide nutzen
+### Using both
 
-Wenn man Datenbank- und Server-Instanz  
-gemeinsam verwenden möchte, funktioniert  
-es wie bei *TYPO3 aufsetzen*.  
-Ein einziger Unterschied beim Setup:
+If you want to use the database and the server together e.g. for Wordpress,
+you can do the following (similar to *TYPO3 setup*):
 
 ```
-# :server statt :typo3
-docker run --name projektname -p 8080:80 -p 4443:443 --link projektname-db:db -d gaia:server
+# :server instead of :typo3
+docker run --name projectname -p 8080:80 -p 4443:443 --link projectname-db:db -d gaia:server
 ```
 
 ## Credits
 
-- [Datenbank](https://github.com/wangxian/alpine-mysql)
+- [MySQL](https://github.com/wangxian/alpine-mysql)
 - [Apache & PHP](https://github.com/wichon/alpine-apache-php)
 - [Apache](https://hub.docker.com/_/httpd/)
 
 ## Roadmap
 
-- Standard-Konfigurationen definieren (PHP, Apache, SSL)
-- `docker-compose` nutzen
-- PHP-FPM nutzen
-- Supervisor nutzen
+- Defining standard configurations (PHP, Apache, SSL)
+- use `docker-compose`
+- use PHP-FPM
+- use a Supervisor

@@ -7,7 +7,6 @@ RUN apk --update add --no-cache apache2 bash vim tar ca-certificates curl ssmtp 
     php7-pdo php7-pdo_mysql php7-pdo_sqlite php7-pdo_pgsql php7-mysqli php7-mbstring php7-session \
     php7-gd php7-mcrypt php7-openssl php7-sockets php7-posix php7-ldap php7-imap \
     apache2-utils shadow && \
-    ln -s /usr/bin/php7 /usr/bin/php && \
     mkdir -p /run/apache2 && \
     sed -i 's/#LoadModule\ rewrite_module/LoadModule\ rewrite_module/' /etc/apache2/httpd.conf && \
     printf "php_value max_execution_time 300\nphp_value max_input_vars 3000\n" > /etc/apache2/conf.d/zzz.default.conf && \
@@ -19,6 +18,7 @@ RUN apk --update add --no-cache apache2 bash vim tar ca-certificates curl ssmtp 
     echo 'rm -f /usr/local/apache2/logs/httpd.pid' >> /usr/local/bin/httpd-foreground && \
     echo 'httpd -DFOREGROUND' >> /usr/local/bin/httpd-foreground && \
     chmod +x /usr/local/bin/httpd-foreground && \
+    rm -f /var/www/localhost/htdocs/index.html && \
     usermod -u 1000 apache
 
 EXPOSE 80 443
