@@ -21,6 +21,7 @@ RUN apk --update add --no-cache apache2 bash vim tar ca-certificates curl ssmtp 
     rm -f /var/www/localhost/htdocs/index.html && \
     usermod -u 1000 apache
 
+WORKDIR /var/www/localhost/htdocs
 EXPOSE 80 443
 
 CMD ["httpd-foreground"]
